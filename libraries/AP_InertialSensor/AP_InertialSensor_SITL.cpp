@@ -77,9 +77,15 @@ void AP_InertialSensor_SITL::generate_accel()
 
     for (uint8_t j = 0; j < nsamples; j++) {
 
-        Vector3f accel = Vector3f(sitl->state.xAccel,
-                                  sitl->state.yAccel,
-                                  sitl->state.zAccel);
+        Vector3f accel = Vector3f(0.0f,0.0f,-GRAVITY_MSS);
+        if(!isnan(sitl->state.imu_xAccel[accel_instance]) &&
+           !isnan(sitl->state.imu_yAccel[accel_instance]) &&
+           !isnan(sitl->state.imu_zAccel[accel_instance])) 
+        {
+            accel = Vector3f(sitl->state.imu_xAccel[accel_instance],
+                             sitl->state.imu_yAccel[accel_instance],
+                             sitl->state.imu_zAccel[accel_instance]);
+        }
 
         const Vector3f &accel_trim = sitl->accel_trim.get();
         if (!accel_trim.is_zero()) {
@@ -211,9 +217,18 @@ void AP_InertialSensor_SITL::generate_gyro()
 
     const float _gyro_drift = gyro_drift();
     for (uint8_t j = 0; j < nsamples; j++) {
-        float p = radians(sitl->state.rollRate) + _gyro_drift;
-        float q = radians(sitl->state.pitchRate) + _gyro_drift;
-        float r = radians(sitl->state.yawRate) + _gyro_drift;
+        float p = _gyro_drift;
+        float q = _gyro_drift;
+        float r = _gyro_drift;
+
+        if(!isnan(sitl->state.imu_rollRate[gyro_instance]) &&
+           !isnan(sitl->state.imu_pitchRate[gyro_instance]) &&
+           !isnan(sitl->state.imu_yawRate[gyro_instance])) 
+        {
+            p += radians(sitl->state.imu_rollRate[gyro_instance]);
+            q += radians(sitl->state.imu_pitchRate[gyro_instance]);
+            r += radians(sitl->state.imu_yawRate[gyro_instance]);
+        }
 
         // minimum gyro noise is less than 1 bit
         float gyro_noise = ToRad(0.04f);

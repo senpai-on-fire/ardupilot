@@ -4,6 +4,8 @@
 
 #if AP_SIM_ENABLED
 
+#define MAX_IMU_COUNT 3
+
 #include <AP_Math/AP_Math.h>
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #include <AP_Baro/AP_Baro.h>
@@ -64,7 +66,9 @@ struct sitl_fdm {
     double heading;   // degrees
     double speedN, speedE, speedD; // m/s
     double xAccel, yAccel, zAccel;       // m/s/s in body frame
+    double imu_xAccel[MAX_IMU_COUNT], imu_yAccel[MAX_IMU_COUNT], imu_zAccel[MAX_IMU_COUNT];       // m/s/s in body frame
     double rollRate, pitchRate, yawRate; // degrees/s in body frame
+    double imu_rollRate[MAX_IMU_COUNT], imu_pitchRate[MAX_IMU_COUNT], imu_yawRate[MAX_IMU_COUNT];
     double rollDeg, pitchDeg, yawDeg;    // euler angles, degrees
     Quaternion quaternion;
     double airspeed; // m/s, EAS
@@ -137,6 +141,16 @@ public:
         if (_singleton != nullptr) {
             AP_HAL::panic("Too many SITL instances");
         }
+
+        for (uint8_t i = 0; i < MAX_IMU_COUNT; i++){
+            state.imu_rollRate[i] = nanf("");
+            state.imu_pitchRate[i] = nanf("");
+            state.imu_yawRate[i] = nanf("");
+            state.imu_xAccel[i] = nanf("");
+            state.imu_yAccel[i] = nanf("");
+            state.imu_zAccel[i] = nanf("");
+        }
+
         _singleton = this;
     }
 

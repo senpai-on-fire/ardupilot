@@ -63,6 +63,11 @@ JSON::JSON(const char *frame_str) :
 {
     printf("Starting SITL: JSON\n");
 
+    for (uint8_t i = 0; i < MAX_IMU_COUNT; i++){
+        state.imu.gyro[i] = Vector3f(nanf(""),nanf(""),nanf(""));
+        state.imu.accel_body[i] = Vector3f(nanf(""),nanf(""),nanf(""));
+    }
+
     const char *colon = strchr(frame_str, ':');
     if (colon) {
         target_ip = colon+1;
@@ -302,12 +307,19 @@ void JSON::recv_fdm(const struct sitl_input &input)
     memmove(sensor_buffer, p2, sensor_buffer_len - (p2 - sensor_buffer));
     sensor_buffer_len = sensor_buffer_len - (p2 - sensor_buffer);
 
-    accel_body = state.imu.accel_body;
-    gyro = state.imu.gyro;
+    accel_body = state.imu.accel_body[0];
+    gyro = state.imu.gyro[0];
     velocity_ef = state.velocity;
     position = state.position;
     position.xy() += origin.get_distance_NE_double(home);
     use_time_sync = !state.no_time_sync;
+
+    // imu sensor data
+    int imu_count = sitl->imu_count > MAX_IMU_COUNT ? MAX_IMU_COUNT : sitl->imu_count;
+    for(int i=0; i < imu_count; ++i) {
+        imu_accel_body[i] = state.imu.accel_body[i];
+        imu_gyro[i] = state.imu.gyro[i];
+    }
 
     // deal with euler or quaternion attitude
     if ((received_bitmask & QUAT_ATT) != 0) {

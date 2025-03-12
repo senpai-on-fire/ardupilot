@@ -75,6 +75,14 @@ Aircraft::Aircraft(const char *frame_str) :
     for (uint8_t i = 0; i < ARRAY_SIZE(rangefinder_m); i++){
         rangefinder_m[i] = nanf("");
     }
+
+    for (uint8_t i = 0; i < ARRAY_SIZE(imu_gyro); i++){
+        imu_gyro[i] = Vector3f(nanf(""),nanf(""),nanf(""));
+    }
+
+    for (uint8_t i = 0; i < ARRAY_SIZE(imu_accel_body); i++){
+        imu_accel_body[i] = Vector3f(nanf(""),nanf(""),nanf(""));
+    }
 }
 
 void Aircraft::set_start_location(const Location &start_loc, const float start_yaw)
@@ -410,6 +418,18 @@ void Aircraft::fill_fdm(struct sitl_fdm &fdm)
     fdm.range = rangefinder_range();
     memcpy(fdm.rcin, rcin, rcin_chan_count * sizeof(float));
     fdm.bodyMagField = mag_bf;
+
+    // imu sensor data
+    int imu_count = sitl->imu_count > MAX_IMU_COUNT ? MAX_IMU_COUNT : sitl->imu_count;
+    for(int i=0; i < imu_count; ++i) {
+        fdm.imu_xAccel[i] = imu_accel_body[i].x;
+        fdm.imu_yAccel[i] = imu_accel_body[i].y;
+        fdm.imu_zAccel[i] = imu_accel_body[i].z;
+
+        fdm.imu_rollRate[i] = degrees(imu_gyro[i].x);
+        fdm.imu_pitchRate[i] = degrees(imu_gyro[i].y);
+        fdm.imu_yawRate[i] = degrees(imu_gyro[i].z);
+    }
 
     // copy laser scanner results
     fdm.scanner.points = scanner.points;

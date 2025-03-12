@@ -91,8 +91,8 @@ private:
     struct {
         double timestamp_s;
         struct {
-            Vector3f gyro;
-            Vector3f accel_body;
+            Vector3f gyro[MAX_IMU_COUNT];
+            Vector3f accel_body[MAX_IMU_COUNT];
         } imu;
         Vector3d position;
         Vector3f attitude;
@@ -114,10 +114,14 @@ private:
         void *ptr;
         enum data_type type;
         bool required;
-    } keytable[17] = {
+    } keytable[21] = {
         { "", "timestamp", &state.timestamp_s, DATA_DOUBLE, true },
-        { "imu", "gyro",    &state.imu.gyro, DATA_VECTOR3F, true },
-        { "imu", "accel_body", &state.imu.accel_body, DATA_VECTOR3F, true },
+        { "imu", "gyro",    &state.imu.gyro[0], DATA_VECTOR3F, true },
+        { "imu", "accel_body", &state.imu.accel_body[0], DATA_VECTOR3F, true },
+        { "imu2", "gyro",    &state.imu.gyro[1], DATA_VECTOR3F, false },
+        { "imu2", "accel_body", &state.imu.accel_body[1], DATA_VECTOR3F, false },
+        { "imu3", "gyro",    &state.imu.gyro[2], DATA_VECTOR3F, false },
+        { "imu3", "accel_body", &state.imu.accel_body[2], DATA_VECTOR3F, false },
         { "", "position", &state.position, DATA_VECTOR3D, true },
         { "", "attitude", &state.attitude, DATA_VECTOR3F, false },
         { "", "quaternion", &state.quaternion, QUATERNION, false },
@@ -136,23 +140,27 @@ private:
 
     // Enum coresponding to the ordering of keys in the keytable.
     enum DataKey {
-        TIMESTAMP   = 1U << 0,
-        GYRO        = 1U << 1,
-        ACCEL_BODY  = 1U << 2,
-        POSITION    = 1U << 3,
-        EULER_ATT   = 1U << 4,
-        QUAT_ATT    = 1U << 5,
-        VELOCITY    = 1U << 6,
-        RNG_1       = 1U << 7,
-        RNG_2       = 1U << 8,
-        RNG_3       = 1U << 9,
-        RNG_4       = 1U << 10,
-        RNG_5       = 1U << 11,
-        RNG_6       = 1U << 12,
-        WIND_DIR    = 1U << 13,
-        WIND_SPD    = 1U << 14,
-        AIRSPEED    = 1U << 15,
-        TIME_SYNC   = 1U << 16,
+        TIMESTAMP    = 1U << 0,
+        GYRO         = 1U << 1,
+        ACCEL_BODY   = 1U << 2,
+        GYRO2        = 1U << 3,
+        ACCEL_BODY2  = 1U << 4,
+        GYRO3        = 1U << 5,
+        ACCEL_BODY3  = 1U << 6,
+        POSITION     = 1U << 7,
+        EULER_ATT    = 1U << 8,
+        QUAT_ATT     = 1U << 9,
+        VELOCITY     = 1U << 10,
+        RNG_1        = 1U << 11,
+        RNG_2        = 1U << 12,
+        RNG_3        = 1U << 13,
+        RNG_4        = 1U << 14,
+        RNG_5        = 1U << 15,
+        RNG_6        = 1U << 16,
+        WIND_DIR     = 1U << 17,
+        WIND_SPD     = 1U << 18,
+        AIRSPEED     = 1U << 19,
+        TIME_SYNC    = 1U << 20,
     };
     uint32_t last_received_bitmask;
 };
