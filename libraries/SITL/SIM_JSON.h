@@ -116,12 +116,12 @@ private:
         bool required;
     } keytable[21] = {
         { "", "timestamp", &state.timestamp_s, DATA_DOUBLE, true },
-        { "imu", "gyro",    &state.imu.gyro[0], DATA_VECTOR3F, true },
-        { "imu", "accel_body", &state.imu.accel_body[0], DATA_VECTOR3F, true },
-        { "imu2", "gyro",    &state.imu.gyro[1], DATA_VECTOR3F, false },
-        { "imu2", "accel_body", &state.imu.accel_body[1], DATA_VECTOR3F, false },
-        { "imu3", "gyro",    &state.imu.gyro[2], DATA_VECTOR3F, false },
-        { "imu3", "accel_body", &state.imu.accel_body[2], DATA_VECTOR3F, false },
+        { "imu", "gyro1",    &state.imu.gyro[0], DATA_VECTOR3F, true },
+        { "imu", "accel_body1", &state.imu.accel_body[0], DATA_VECTOR3F, true },
+        { "imu", "gyro2",    &state.imu.gyro[1], DATA_VECTOR3F, true },
+        { "imu", "accel_body2", &state.imu.accel_body[1], DATA_VECTOR3F, true },
+        { "imu", "gyro3",    &state.imu.gyro[2], DATA_VECTOR3F, false },
+        { "imu", "accel_body3", &state.imu.accel_body[2], DATA_VECTOR3F, false },
         { "", "position", &state.position, DATA_VECTOR3D, true },
         { "", "attitude", &state.attitude, DATA_VECTOR3F, false },
         { "", "quaternion", &state.quaternion, QUATERNION, false },
